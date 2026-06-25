@@ -52,6 +52,11 @@ int main(int argc, char* argv[])
       outFilename = filename.substr(4);
       outStatus = true;
     }
+    else
+    {
+      std::cerr << "Invalid args" << '\n';
+      return 1;
+    }
   }
 
   if (argc > 2)
@@ -83,6 +88,11 @@ int main(int argc, char* argv[])
       }
       outFilename = filename.substr(4);
       outStatus = true;
+    }
+    else
+    {
+      std::cerr << "Invalid args" << '\n';
+      return 1;
     }
   }
 
@@ -147,6 +157,7 @@ int main(int argc, char* argv[])
   if (!in && !in.eof())
   {
     std::cerr << "Input format error occurred" << '\n';
+    delete[] massive;
     return 1;
   }
 
@@ -169,6 +180,10 @@ int main(int argc, char* argv[])
   for (size_t i = 0; i < size; ++i)
   {
     out << massive[i].id << ' ' << massive[i].info << '\n';
+  }
+  if (!size)
+  {
+    out << '\n';
   }
 
   std::cerr << size << ' ' << fail << '\n';
