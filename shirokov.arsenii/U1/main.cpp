@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
   std::ifstream fileIn;
   std::ostream* outPtr = &std::cout;
   std::ofstream fileOut;
+  std::string outFilename;
   bool inStatus = false, outStatus = false;
 
   if (argc > 1)
@@ -48,15 +49,7 @@ int main(int argc, char* argv[])
     }
     else if (filename.compare(0, 4, "out:") == 0)
     {
-      try
-      {
-        shirokov::makeOut(filename.substr(4), fileOut, &outPtr);
-      }
-      catch (const std::runtime_error& e)
-      {
-        std::cerr << e.what() << '\n';
-        return 1;
-      }
+      outFilename = filename.substr(4);
       outStatus = true;
     }
   }
@@ -88,19 +81,11 @@ int main(int argc, char* argv[])
         std::cerr << "Output file already exist" << '\n';
         return 2;
       }
-      try
-      {
-        shirokov::makeOut(filename.substr(4), fileOut, &outPtr);
-      }
-      catch (const std::runtime_error& e)
-      {
-        std::cerr << e.what() << '\n';
-        return 2;
-      }
+      outFilename = filename.substr(4);
+      outStatus = true;
     }
   }
 
-  std::ostream& out = *outPtr;
   std::istream& in = *inPtr;
 
   shirokov::Person* massive = nullptr;
@@ -109,10 +94,14 @@ int main(int argc, char* argv[])
   size_t id = 0;
   while (in >> id)
   {
-    in >> std::ws;
+    while (in.peek() == ' ')
+    {
+      in.get();
+    }
+
     std::string info;
 
-    if (!std::getline(in, info) || info.empty())
+    if (!std::getline(in, info))
     {
       if (!in.eof())
       {
@@ -121,6 +110,11 @@ int main(int argc, char* argv[])
         continue;
       }
       break;
+    }
+
+    if (info.empty())
+    {
+      continue;
     }
 
     shirokov::Person person{id, info};
@@ -150,6 +144,22 @@ int main(int argc, char* argv[])
   {
     std::cerr << "Input format error occurred" << '\n';
   }
+
+  if (outStatus)
+  {
+    try
+    {
+      shirokov::makeOut(outFilename, fileOut, &outPtr);
+    }
+    catch (const std::runtime_error& e)
+    {
+      std::cerr << e.what() << '\n';
+      delete[] massive;
+      return 2;
+    }
+  }
+
+  std::ostream& out = *outPtr;
 
   for (size_t i = 0; i < size; ++i)
   {
