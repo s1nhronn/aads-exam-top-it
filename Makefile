@@ -5,7 +5,7 @@
 .SECONDARY:
 
 BOOST_LOCATION := $(shell test -f .boost_location && cat .boost_location ; true)
-DOCKER_IMAGE ?= caseyrgb/rgb-tested:latest
+DOCKER_IMAGE ?= volgarenok/cxx-test:exam
 
 ifneq 'yes' '$(VERBOSE)'
 hidecmd := @
